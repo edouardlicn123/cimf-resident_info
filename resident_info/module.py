@@ -8,7 +8,7 @@ MODULE_INFO = {
     'name': '居民信息',
     'type': 'node',
     'version': '1.0.0',
-    'author': '',
+    'author': 'edouardlicn',
     'description': '管理居民住户信息，适合居委会及网格员使用。',
     'icon': 'bi-person-vcard',
     'dashboard_cards': [

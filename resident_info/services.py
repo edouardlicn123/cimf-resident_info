@@ -119,13 +119,11 @@ class ResidentInfoService:
         return resident
     
     @staticmethod
-    def delete(resident_id: int) -> bool:
-        resident = ResidentInfoFields.objects.filter(id=resident_id).first()
+    def delete_by_node_id(node_id: int) -> bool:
+        """通过 node_id 删除居民信息（级联删除 node）"""
+        resident = ResidentInfoFields.objects.filter(node_id=node_id).first()
         if resident:
-            node = resident.node
-            resident.delete()
-            if node:
-                node.delete()
+            resident.node.delete()  # CASCADE 会自动删除 resident
             return True
         return False
     

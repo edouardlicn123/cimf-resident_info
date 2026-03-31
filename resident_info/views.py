@@ -201,7 +201,7 @@ def node_edit(request, node_id: int):
     has_perm, error_msg = check_resident_permission(request.user, node, 'edit')
     if not has_perm:
         messages.error(request, error_msg)
-        return redirect('modules:resident_info:view', node_id=node_id)
+        return redirect('modules:resident_info:view', node_id)
     
     resident = ResidentInfoService.get_by_node_id(node_id)
     if not resident:
@@ -245,7 +245,7 @@ def node_edit(request, node_id: int):
         try:
             ResidentInfoService.update(resident.id, request.user, data)
             messages.success(request, '居民信息更新成功')
-            return redirect('modules:resident_info:view', node_id=node_id)
+            return redirect('modules:resident_info:view', node_id)
         except Exception as e:
             messages.error(request, str(e))
     
@@ -276,7 +276,7 @@ def node_delete(request, node_id: int):
         if not has_perm:
             messages.error(request, error_msg)
         else:
-            ResidentInfoService.delete(node_id)
+            ResidentInfoService.delete_by_node_id(node_id)
             messages.success(request, '居民信息已删除')
     
     return redirect('modules:resident_info:list')

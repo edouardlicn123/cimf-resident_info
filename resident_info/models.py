@@ -26,7 +26,7 @@ class ResidentInfoFields(models.Model):
         related_name='resident_relation_residents',
         verbose_name='与其他人员关系'
     )
-    id_card = models.CharField(max_length=18, verbose_name='身份证号')
+    id_card = models.CharField(max_length=18, blank=True, null=True, verbose_name='身份证号')
     gender = models.ForeignKey(
         'core.TaxonomyItem',
         on_delete=models.SET_NULL,
@@ -36,7 +36,7 @@ class ResidentInfoFields(models.Model):
         verbose_name='性别'
     )
     birth_date = models.DateField(null=True, blank=True, verbose_name='出生日期')
-    phone = models.CharField(max_length=100, blank=True, verbose_name='联系电话')
+    phone = models.CharField(max_length=100, blank=True, null=True, verbose_name='联系电话')
     
     current_community = models.CharField(max_length=200, blank=True, verbose_name='现住小区/建筑')
     current_door = models.CharField(max_length=100, blank=True, verbose_name='门牌地址')

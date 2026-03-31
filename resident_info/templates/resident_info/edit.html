@@ -13,7 +13,7 @@
     
     <div class="col-md-6">
         <label class="form-label">姓名 *</label>
-        <input type="text" name="name" class="form-control" value="{{ resident.name if resident.name else '' }}" required>
+        <input type="text" name="name" class="form-control" value="{{ resident.name if resident and resident.name else '' }}" required>
     </div>
     
     <div class="col-md-6">
@@ -28,7 +28,7 @@
     
     <div class="col-md-6">
         <label class="form-label">身份证号</label>
-        <input type="text" name="id_card" class="form-control" value="{{ resident.id_card if resident.id_card else '' }}">
+        <input type="text" name="id_card" class="form-control" value="{{ resident.id_card if resident and resident.id_card else '' }}">
     </div>
     
     <div class="col-md-6">
@@ -43,22 +43,22 @@
     
     <div class="col-md-6">
         <label class="form-label">出生日期</label>
-        <input type="date" name="birth_date" class="form-control" value="{{ resident.birth_date if resident.birth_date else '' }}">
+        <input type="date" name="birth_date" class="form-control" value="{{ resident.birth_date if resident and resident.birth_date else '' }}">
     </div>
     
     <div class="col-md-6">
         <label class="form-label">联系电话</label>
-        <input type="text" name="phone" class="form-control" value="{{ resident.phone if resident.phone else '' }}">
+        <input type="text" name="phone" class="form-control" value="{{ resident.phone if resident and resident.phone else '' }}">
     </div>
     
     <div class="col-md-6">
         <label class="form-label">现住小区/建筑</label>
-        <input type="text" name="current_community" class="form-control" value="{{ resident.current_community if resident.current_community else '' }}">
+        <input type="text" name="current_community" class="form-control" value="{{ resident.current_community if resident and resident.current_community else '' }}">
     </div>
     
     <div class="col-md-6">
         <label class="form-label">门牌地址</label>
-        <input type="text" name="current_door" class="form-control" value="{{ resident.current_door if resident.current_door else '' }}">
+        <input type="text" name="current_door" class="form-control" value="{{ resident.current_door if resident and resident.current_door else '' }}">
     </div>
     
     <div class="col-md-6">
@@ -105,12 +105,12 @@
     
     <div class="col-md-6">
         <label class="form-label">户籍小区/建筑</label>
-        <input type="text" name="registered_community" class="form-control" value="{{ resident.registered_community if resident.registered_community else '' }}">
+        <input type="text" name="registered_community" class="form-control" value="{{ resident.registered_community if resident and resident.registered_community else '' }}">
     </div>
     
     <div class="col-md-6">
         <label class="form-label">户籍地址</label>
-        <input type="text" name="registered_address" class="form-control" value="{{ resident.registered_address if resident.registered_address else '' }}">
+        <input type="text" name="registered_address" class="form-control" value="{{ resident.registered_address if resident and resident.registered_address else '' }}">
     </div>
     
     <div class="col-md-12">
@@ -170,7 +170,7 @@
     
     <div class="col-md-12">
         <label class="form-label">备注</label>
-        <textarea name="notes" class="form-control" rows="3">{{ resident.notes if resident.notes else '' }}</textarea>
+        <textarea name="notes" class="form-control" rows="3">{{ resident.notes if resident and resident.notes else '' }}</textarea>
     </div>
     
     <div class="col-md-12">

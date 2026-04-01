@@ -4,7 +4,7 @@
 ![Django](https://img.shields.io/badge/django-6.0+-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-> 管理居民住户信息，适合居委会及网格员使用的社区信息管理模块。
+> 用于CIMF系统的居民住户信息管理模块，适用于居委会及网格员的管理场景。
 
 ## 目录
 
@@ -53,7 +53,7 @@ ModuleService.install_module('resident_info')
 
 ### 访问
 
-初始化完成后，访问 `/resident_info/` 即可进入居民信息管理页面。
+初始化完成后，访问 `/resident_info/` 即可进入居民信息管理页面。同时系统会在事务管理页增加入口
 
 ---
 

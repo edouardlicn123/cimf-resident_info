@@ -137,3 +137,38 @@ class ResidentInfoService:
         from datetime import timedelta
         start_date = timezone.now() - timedelta(days=days)
         return ResidentInfoFields.objects.filter(created_at__gte=start_date).count()
+    
+    @staticmethod
+    def get_exportable_fields() -> List[Dict]:
+        """获取可导出的字段列表"""
+        return [
+            {'name': 'name', 'label': '姓名', 'type': 'string', 'required': True},
+            {'name': 'relation', 'label': '与户主关系', 'type': 'fk'},
+            {'name': 'id_card', 'label': '身份证号', 'type': 'string'},
+            {'name': 'gender', 'label': '性别', 'type': 'fk'},
+            {'name': 'birth_date', 'label': '出生日期', 'type': 'date'},
+            {'name': 'phone', 'label': '联系电话', 'type': 'telephone'},
+            {'name': 'current_community', 'label': '现住小区/建筑', 'type': 'string'},
+            {'name': 'current_door', 'label': '门牌地址', 'type': 'string'},
+            {'name': 'grid', 'label': '所属网格', 'type': 'fk'},
+            {'name': 'resident_type', 'label': '人员类型', 'type': 'fk'},
+            {'name': 'is_key_person', 'label': '是否重点人员', 'type': 'boolean'},
+            {'name': 'key_category', 'label': '重点类别', 'type': 'fk'},
+            {'name': 'registered_community', 'label': '户籍小区/建筑', 'type': 'string'},
+            {'name': 'registered_address', 'label': '户籍地址', 'type': 'string'},
+            {'name': 'household_number', 'label': '户编号', 'type': 'string'},
+            {'name': 'is_separated', 'label': '是否人户分离', 'type': 'boolean'},
+            {'name': 'actual_residence', 'label': '实际居住地', 'type': 'string'},
+            {'name': 'is_moved_out', 'label': '是否已迁出', 'type': 'boolean'},
+            {'name': 'move_out_date', 'label': '迁出日期', 'type': 'date'},
+            {'name': 'move_to_place', 'label': '迁往地', 'type': 'string'},
+            {'name': 'is_deceased', 'label': '是否已死亡', 'type': 'boolean'},
+            {'name': 'death_date', 'label': '死亡日期', 'type': 'date'},
+            {'name': 'nation', 'label': '民族', 'type': 'fk'},
+            {'name': 'political_status', 'label': '政治面貌', 'type': 'fk'},
+            {'name': 'marital_status', 'label': '婚姻状况', 'type': 'fk'},
+            {'name': 'education', 'label': '文化程度', 'type': 'fk'},
+            {'name': 'work_status', 'label': '工作学习情况', 'type': 'string'},
+            {'name': 'health_status', 'label': '健康状况', 'type': 'fk'},
+            {'name': 'notes', 'label': '备注', 'type': 'string'},
+        ]

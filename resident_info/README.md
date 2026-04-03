@@ -4,6 +4,8 @@
 ![Django](https://img.shields.io/badge/django-6.0+-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
+主项目CIMF https://github.com/edouardlicn123/cimf
+
 > 管理居民住户信息，适合居委会及网格员使用的社区信息管理模块。
 
 ## 目录

@@ -11,6 +11,7 @@ MODULE_INFO = {
     'author': 'edouardlicn',
     'description': '管理居民住户信息，适合居委会及网格员使用。',
     'icon': 'bi-person-vcard',
+    'require': [],
     'permissions': [
         {'key': 'view_others', 'name': '查看别人的内容'},
         {'key': 'edit_others', 'name': '修改别人的内容'},

@@ -33,7 +33,14 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label text-muted">身份证号</label>
-                <p class="mb-0">{{ resident.id_card if resident.id_card else '-' }}</p>
+                <p class="mb-0">
+                    {{ resident.id_card if resident.id_card else '-' }}
+                    {% if resident.id_card and resident.id_card_valid == False %}
+                    <span class="badge bg-danger ms-2" title="身份证号校验失败">
+                        <i class="bi bi-exclamation-triangle-fill"></i> 无效
+                    </span>
+                    {% endif %}
+                </p>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label text-muted">性别</label>

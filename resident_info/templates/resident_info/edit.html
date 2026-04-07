@@ -28,15 +28,21 @@
     
     <div class="col-md-6">
         <label class="form-label">身份证号</label>
-        <input type="text" name="id_card" class="form-control" value="{{ resident.id_card if resident and resident.id_card else '' }}">
+        <input type="text" name="id_card" id="id_card" class="form-control" 
+               value="{{ resident.id_card if resident and resident.id_card else '' }}"
+               maxlength="18"
+               placeholder="15位或18位身份证号"
+               oninput="handleIdCardInput(this)"
+               onpaste="setTimeout(() => handleIdCardInput(this), 0)">
+        <div id="id_card_feedback" class="form-text"></div>
     </div>
     
     <div class="col-md-6">
         <label class="form-label">性别</label>
-        <select name="gender" class="form-select">
+        <select name="gender" id="gender" class="form-select">
             <option value="">请选择</option>
             {% for item in genders %}
-            <option value="{{ item.id }}" {% if resident and resident.gender_id == item.id %}selected{% endif %}>{{ item.name }}</option>
+            <option value="{{ item.id }}" data-name="{{ item.name }}" {% if resident and resident.gender_id == item.id %}selected{% endif %}>{{ item.name }}</option>
             {% endfor %}
         </select>
     </div>
@@ -180,4 +186,124 @@
         <a href="{{ url('modules:resident_info:list') }}" class="btn btn-secondary">取消</a>
     </div>
 </form>
+
+<script>
+(function() {
+    const idCardInput = document.getElementById('id_card');
+    const genderSelect = document.getElementById('gender');
+    const birthDateInput = document.querySelector('input[name="birth_date"]');
+    const feedback = document.getElementById('id_card_feedback');
+
+    function validateIdCard(idCard) {
+        idCard = idCard.trim().toUpperCase();
+        
+        if (!idCard) {
+            return { valid: null, message: '' };
+        }
+        
+        if (!/^\d+$/.test(idCard) && !/^\d+X$/i.test(idCard)) {
+            return { valid: false, message: '身份证号只能包含数字和字母X' };
+        }
+        
+        if (idCard.length !== 15 && idCard.length !== 18) {
+            return { valid: false, message: '身份证号长度必须为15位或18位' };
+        }
+        
+        if (idCard.length === 18) {
+            const coefficients = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+            const checkCodes = ['1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'];
+            
+            if (!/^\d+X$/i.test(idCard) && !/^\d{18}$/.test(idCard)) {
+                return { valid: false, message: '18位身份证号格式不正确' };
+            }
+            
+            const total = idCard.split('').slice(0, 17).reduce((sum, digit, i) => {
+                return sum + parseInt(digit) * coefficients[i];
+            }, 0);
+            
+            const expectedCheckCode = checkCodes[total % 11];
+            const actualCheckCode = idCard.slice(-1).toUpperCase();
+            
+            if (expectedCheckCode !== actualCheckCode) {
+                return { valid: false, message: '身份证号校验码不正确' };
+            }
+        }
+        
+        return { valid: true, message: '' };
+    }
+
+    function parseIdCard(idCard) {
+        idCard = idCard.trim();
+        
+        let birthDateStr;
+        if (idCard.length === 15) {
+            birthDateStr = '19' + idCard.slice(6, 12);
+        } else if (idCard.length === 18) {
+            birthDateStr = idCard.slice(6, 14);
+        } else {
+            return null;
+        }
+        
+        const year = birthDateStr.slice(0, 4);
+        const month = birthDateStr.slice(4, 6);
+        const day = birthDateStr.slice(6, 8);
+        
+        if (!/^\d{4}$/.test(year) || !/^\d{2}$/.test(month) || !/^\d{2}$/.test(day)) {
+            return null;
+        }
+        
+        const dateStr = `${year}-${month}-${day}`;
+        const date = new Date(dateStr);
+        
+        if (isNaN(date.getTime())) {
+            return null;
+        }
+        
+        return dateStr;
+    }
+
+    function handleIdCardInput(input) {
+        const value = input.value;
+        const result = validateIdCard(value);
+        
+        if (result.valid === null) {
+            feedback.textContent = '';
+            input.classList.remove('is-valid', 'is-invalid');
+        } else if (result.valid) {
+            feedback.textContent = '✓ 身份证号格式正确';
+            feedback.className = 'form-text text-success';
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+            
+            const birthDate = parseIdCard(value);
+            if (birthDate && !birthDateInput.value) {
+                birthDateInput.value = birthDate;
+            }
+            
+            const genderDigit = value.length === 15 ? value.slice(-1) : value.slice(16, 17);
+            if (/^\d$/.test(genderDigit)) {
+                const expectedGender = parseInt(genderDigit) % 2 === 1 ? '男' : '女';
+                const options = genderSelect.querySelectorAll('option[data-name]');
+                for (const opt of options) {
+                    if (opt.dataset.name === expectedGender && !genderSelect.dataset.userSelected) {
+                        genderSelect.value = opt.value;
+                        break;
+                    }
+                }
+            }
+        } else {
+            feedback.textContent = '✗ ' + result.message;
+            feedback.className = 'form-text text-danger';
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+        }
+    }
+
+    genderSelect.addEventListener('change', function() {
+        if (this.value) {
+            this.dataset.userSelected = 'true';
+        }
+    });
+})();
+</script>
 {% endblock %}

@@ -139,3 +139,29 @@ class ResidentInfoFields(models.Model):
     
     def __str__(self):
         return self.name
+
+    @property
+    def id_card_valid(self):
+        """验证身份证号是否有效"""
+        id_card = self.id_card
+        if not id_card:
+            return None
+        
+        id_card = id_card.strip().upper()
+        
+        if len(id_card) == 15:
+            if not id_card.isdigit():
+                return False
+            return True
+        elif len(id_card) == 18:
+            if not (id_card[:-1].isdigit() and (id_card[-1].isdigit() or id_card[-1] == 'X')):
+                return False
+            if id_card[-1] == 'X':
+                return True
+            coefficients = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
+            check_codes = ['1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2']
+            total = sum(int(id_card[i]) * coefficients[i] for i in range(17))
+            expected = check_codes[total % 11]
+            return id_card[-1] == expected
+        else:
+            return False

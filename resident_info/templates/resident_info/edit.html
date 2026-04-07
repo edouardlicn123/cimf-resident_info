@@ -31,9 +31,7 @@
         <input type="text" name="id_card" id="id_card" class="form-control" 
                value="{{ resident.id_card if resident and resident.id_card else '' }}"
                maxlength="18"
-               placeholder="15位或18位身份证号"
-               oninput="handleIdCardInput(this)"
-               onpaste="setTimeout(() => handleIdCardInput(this), 0)">
+               placeholder="15位或18位身份证号">
         <div id="id_card_feedback" class="form-text"></div>
     </div>
     
@@ -262,18 +260,18 @@
         return dateStr;
     }
 
-    function handleIdCardInput(input) {
-        const value = input.value;
+    function handleIdCardInput() {
+        const value = idCardInput.value;
         const result = validateIdCard(value);
         
         if (result.valid === null) {
             feedback.textContent = '';
-            input.classList.remove('is-valid', 'is-invalid');
+            idCardInput.classList.remove('is-valid', 'is-invalid');
         } else if (result.valid) {
             feedback.textContent = '✓ 身份证号格式正确';
             feedback.className = 'form-text text-success';
-            input.classList.remove('is-invalid');
-            input.classList.add('is-valid');
+            idCardInput.classList.remove('is-invalid');
+            idCardInput.classList.add('is-valid');
             
             const birthDate = parseIdCard(value);
             if (birthDate && !birthDateInput.value) {
@@ -294,11 +292,16 @@
         } else {
             feedback.textContent = '✗ ' + result.message;
             feedback.className = 'form-text text-danger';
-            input.classList.remove('is-valid');
-            input.classList.add('is-invalid');
+            idCardInput.classList.remove('is-valid');
+            idCardInput.classList.add('is-invalid');
         }
     }
 
+    idCardInput.addEventListener('input', handleIdCardInput);
+    idCardInput.addEventListener('paste', function(e) {
+        setTimeout(handleIdCardInput, 0);
+    });
+    
     genderSelect.addEventListener('change', function() {
         if (this.value) {
             this.dataset.userSelected = 'true';

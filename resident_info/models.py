@@ -37,6 +37,8 @@ class ResidentInfoFields(models.Model):
     )
     birth_date = models.DateField(null=True, blank=True, verbose_name='出生日期')
     phone = models.CharField(max_length=100, blank=True, null=True, verbose_name='联系电话')
+    phone2 = models.CharField(max_length=100, blank=True, null=True, verbose_name='联系电话2')
+    phone3 = models.CharField(max_length=100, blank=True, null=True, verbose_name='联系电话3')
     
     current_community = models.CharField(max_length=200, blank=True, verbose_name='现住小区/建筑')
     current_door = models.CharField(max_length=100, blank=True, verbose_name='门牌地址')

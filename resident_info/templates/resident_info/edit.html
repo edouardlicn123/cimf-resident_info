@@ -3,13 +3,13 @@
 {% set show_nav = true %}
 {% set show_header = false %}
 
-{% block admin_title %}
-  {% if resident %}编辑{% else %}新建{% endif %}居民信息
+{% block admin_title_content %}
+  {% if resident %}编辑居民信息{% else %}新增人员{% endif %}
 {% endblock %}
 
 {% block admin_content %}
 <form method="post" class="row g-3">
-    {{ csrf_token }}
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
     
     <div class="col-md-6">
         <label class="form-label">姓名 *</label>
@@ -53,6 +53,16 @@
     <div class="col-md-6">
         <label class="form-label">联系电话</label>
         <input type="text" name="phone" class="form-control" value="{{ resident.phone if resident and resident.phone else '' }}">
+    </div>
+    
+    <div class="col-md-6">
+        <label class="form-label">联系电话2</label>
+        <input type="text" name="phone2" class="form-control" value="{{ resident.phone2 if resident and resident.phone2 else '' }}">
+    </div>
+    
+    <div class="col-md-6">
+        <label class="form-label">联系电话3</label>
+        <input type="text" name="phone3" class="form-control" value="{{ resident.phone3 if resident and resident.phone3 else '' }}">
     </div>
     
     <div class="col-md-6">

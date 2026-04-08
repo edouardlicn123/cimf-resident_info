@@ -17,7 +17,8 @@ class ResidentInfoService:
     
     @staticmethod
     def get_list(search: Optional[str] = None, resident_type_id: Optional[int] = None,
-                grid_id: Optional[int] = None, user=None) -> List[ResidentInfoFields]:
+                grid_id: Optional[int] = None, current_community: Optional[str] = None,
+                user=None) -> List[ResidentInfoFields]:
         """获取居民列表"""
         queryset = ResidentInfoFields.objects.select_related(
             'node', 'relation', 'gender', 'grid', 'resident_type', 
@@ -30,9 +31,11 @@ class ResidentInfoService:
         
         if search:
             queryset = queryset.filter(
-                Q(name__icontains=search) |
-                Q(id_card__icontains=search) |
-                Q(phone__icontains=search)
+                Q(name__isnull=False, name__icontains=search) |
+                Q(id_card__isnull=False, id_card__icontains=search) |
+                Q(phone__isnull=False, phone__icontains=search) |
+                Q(phone2__isnull=False, phone2__icontains=search) |
+                Q(phone3__isnull=False, phone3__icontains=search)
             )
         
         if resident_type_id:
@@ -40,6 +43,9 @@ class ResidentInfoService:
         
         if grid_id:
             queryset = queryset.filter(grid_id=grid_id)
+        
+        if current_community:
+            queryset = queryset.filter(current_community__icontains=current_community)
         
         return queryset.order_by('-created_at')
     
@@ -63,6 +69,8 @@ class ResidentInfoService:
             gender_id=data.get('gender_id'),
             birth_date=data.get('birth_date'),
             phone=data.get('phone'),
+            phone2=data.get('phone2'),
+            phone3=data.get('phone3'),
             current_community=data.get('current_community'),
             current_door=data.get('current_door'),
             grid_id=data.get('grid_id'),
@@ -101,6 +109,7 @@ class ResidentInfoService:
         
         update_fields = [
             'name', 'relation_id', 'id_card', 'gender_id', 'birth_date', 'phone',
+            'phone2', 'phone3',
             'current_community', 'current_door', 'grid_id',
             'resident_type_id', 'is_key_person', 'key_category_id',
             'registered_community', 'registered_address', 'registered_region', 'household_number',
@@ -148,6 +157,8 @@ class ResidentInfoService:
             {'name': 'gender', 'label': '性别', 'type': 'fk'},
             {'name': 'birth_date', 'label': '出生日期', 'type': 'date'},
             {'name': 'phone', 'label': '联系电话', 'type': 'telephone'},
+            {'name': 'phone2', 'label': '联系电话2', 'type': 'telephone'},
+            {'name': 'phone3', 'label': '联系电话3', 'type': 'telephone'},
             {'name': 'current_community', 'label': '现住小区/建筑', 'type': 'string'},
             {'name': 'current_door', 'label': '门牌地址', 'type': 'string'},
             {'name': 'grid', 'label': '所属网格', 'type': 'fk'},

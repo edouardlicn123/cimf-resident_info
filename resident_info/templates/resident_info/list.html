@@ -3,13 +3,13 @@
 {% set show_nav = true %}
 {% set show_header = false %}
 
-{% block admin_title %}
-  {{ node_type.name }}
+{% block admin_title_content %}
+  居民信息
 {% endblock %}
 
-{% block admin_title_buttons %}
+{% block admin_buttons_content %}
 <a href="{{ url('modules:resident_info:create') }}" class="btn btn-primary">
-    <i class="bi bi-plus-lg"></i> 新建
+    <i class="bi bi-plus-lg"></i> 新增人员
 </a>
 {% endblock %}
 
@@ -17,11 +17,11 @@
 <div class="card mb-4">
     <div class="card-body">
         <form method="get" class="row g-3">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label small text-muted">姓名/身份证号/电话</label>
                 <input type="text" name="search" class="form-control" placeholder="搜索..." value="{{ search }}">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label small text-muted">人员类型</label>
                 <select name="resident_type" class="form-select">
                     <option value="">全部</option>
@@ -32,7 +32,7 @@
                     {% endif %}
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label small text-muted">所属网格</label>
                 <select name="grid" class="form-select">
                     <option value="">全部</option>
@@ -42,6 +42,11 @@
                     {% endfor %}
                     {% endif %}
                 </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">现住小区/建筑</label>
+                <input type="text" name="current_community" class="form-control" 
+                       placeholder="搜索现住小区..." value="{{ filter_current_community }}">
             </div>
             <div class="col-md-2 d-flex align-items-end">
                 <button type="submit" class="btn btn-outline-primary w-100">
@@ -61,9 +66,8 @@
                         <th>姓名</th>
                         <th>身份证号</th>
                         <th>联系电话</th>
-                        <th>人员类型</th>
+                        <th>所在小区/建筑</th>
                         <th>所属网格</th>
-                        <th>创建时间</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -74,9 +78,8 @@
                         <td>{{ resident.name }}</td>
                         <td>{{ resident.id_card if resident.id_card else '-' }}</td>
                         <td>{{ resident.phone if resident.phone else '-' }}</td>
-                        <td>{{ resident.resident_type.name if resident.resident_type else '-' }}</td>
+                        <td>{{ resident.current_community if resident.current_community else '-' }}</td>
                         <td>{{ resident.grid.name if resident.grid else '-' }}</td>
-                        <td>{{ resident.created_at|date('Y-m-d H:i') }}</td>
                         <td>
                             <a href="{{ url('modules:resident_info:view', resident.node_id) }}" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-eye"></i>
@@ -89,7 +92,7 @@
                     {% endfor %}
                     {% else %}
                     <tr>
-                        <td colspan="7" class="text-center py-4">暂无数据</td>
+                        <td colspan="6" class="text-center py-4">暂无数据</td>
                     </tr>
                     {% endif %}
                 </tbody>
@@ -103,7 +106,7 @@
     <ul class="pagination justify-content-center">
         {% if has_prev %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ prev_page }}&search={{ search }}&resident_type={{ filter_resident_type }}&grid={{ filter_grid }}">上一页</a>
+            <a class="page-link" href="?page={{ prev_page }}&search={{ search }}&resident_type={{ filter_resident_type }}&grid={{ filter_grid }}&current_community={{ filter_current_community }}">上一页</a>
         </li>
         {% endif %}
         <li class="page-item disabled">
@@ -111,7 +114,7 @@
         </li>
         {% if has_next %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ next_page }}&search={{ search }}&resident_type={{ filter_resident_type }}&grid={{ filter_grid }}">下一页</a>
+            <a class="page-link" href="?page={{ next_page }}&search={{ search }}&resident_type={{ filter_resident_type }}&grid={{ filter_grid }}&current_community={{ filter_current_community }}">下一页</a>
         </li>
         {% endif %}
     </ul>

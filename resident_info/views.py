@@ -64,6 +64,7 @@ def node_list(request):
     search = request.GET.get('search', '')
     resident_type_filter = request.GET.get('resident_type', '')
     grid_filter = request.GET.get('grid', '')
+    current_community_filter = request.GET.get('current_community', '')
     
     resident_type_id = safe_int(resident_type_filter)
     grid_id = safe_int(grid_filter)
@@ -72,6 +73,7 @@ def node_list(request):
         search if search else None,
         resident_type_id=resident_type_id,
         grid_id=grid_id,
+        current_community=current_community_filter if current_community_filter else None,
         user=request.user
     )
     
@@ -87,6 +89,7 @@ def node_list(request):
         'active_section': 'resident_info',
         'filter_resident_type': resident_type_filter,
         'filter_grid': grid_filter,
+        'filter_current_community': current_community_filter,
         'resident_types': get_taxonomy_items('resident_type'),
         'grids': get_taxonomy_items('grid'),
         'page_obj': page_obj,
@@ -114,6 +117,8 @@ def node_create(request):
             'gender_id': request.POST.get('gender') or None,
             'birth_date': request.POST.get('birth_date') or None,
             'phone': request.POST.get('phone', '').strip() or None,
+            'phone2': request.POST.get('phone2', '').strip() or None,
+            'phone3': request.POST.get('phone3', '').strip() or None,
             'current_community': request.POST.get('current_community', '').strip(),
             'current_door': request.POST.get('current_door', '').strip(),
             'grid_id': request.POST.get('grid') or None,
@@ -216,6 +221,8 @@ def node_edit(request, node_id: int):
             'gender_id': request.POST.get('gender') or None,
             'birth_date': request.POST.get('birth_date') or None,
             'phone': request.POST.get('phone', '').strip() or None,
+            'phone2': request.POST.get('phone2', '').strip() or None,
+            'phone3': request.POST.get('phone3', '').strip() or None,
             'current_community': request.POST.get('current_community', '').strip(),
             'current_door': request.POST.get('current_door', '').strip(),
             'grid_id': request.POST.get('grid') or None,

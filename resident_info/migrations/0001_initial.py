@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('core', '0009_rename_nodemodule_to_module'),
+        ('core', '0002_module'),
     ]
 
     operations = [

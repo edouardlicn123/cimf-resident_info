@@ -52,6 +52,8 @@ MODULE_INFO = {
             'id': 'resident_info_card',
             'name': '居民信息',
             'template': 'resident_info/dashboard_card.html',
+            'color_start': '#813d9c',
+            'color_end': '#813d9c',
         }
     ],
     'dashboard_stats': True,

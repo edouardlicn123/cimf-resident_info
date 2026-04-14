@@ -48,11 +48,16 @@ class ResidentInfoService:
         if current_community:
             queryset = queryset.filter(current_community__icontains=current_community)
         
-        if not show_moved_out:
-            queryset = queryset.filter(is_moved_out=False)
-        
-        if not show_deceased:
-            queryset = queryset.filter(is_deceased=False)
+        from django.db.models import Q
+        if show_moved_out or show_deceased:
+            query = Q()
+            if show_moved_out:
+                query |= Q(is_moved_out=True)
+            if show_deceased:
+                query |= Q(is_deceased=True)
+            queryset = queryset.filter(query)
+        else:
+            queryset = queryset.filter(is_moved_out=False, is_deceased=False)
         
         return queryset.order_by('-created_at')
     

@@ -66,7 +66,7 @@ class ResidentInfoService:
     
     @staticmethod
     def create(user, data: Dict[str, Any]) -> ResidentInfoFields:
-        node = NodeService.create('resident_info', user, {})
+        node = NodeService.create_node('resident_info', {}, user)
         
         resident = ResidentInfoFields.objects.create(
             node=node,
@@ -76,32 +76,33 @@ class ResidentInfoService:
             gender_id=data.get('gender_id'),
             birth_date=data.get('birth_date'),
             phone=data.get('phone'),
-            phone2=data.get('phone2'),
-            phone3=data.get('phone3'),
-            current_community=data.get('current_community'),
-            current_door=data.get('current_door'),
+            phone2=data.get('phone2') or '',
+            phone3=data.get('phone3') or '',
+            current_community=data.get('current_community', ''),
+            current_door=data.get('current_door') or '',
             grid_id=data.get('grid_id'),
             resident_type_id=data.get('resident_type_id'),
             is_key_person=data.get('is_key_person', False),
             key_category_id=data.get('key_category_id'),
-            registered_community=data.get('registered_community'),
-            registered_address=data.get('registered_address'),
+            registered_community=data.get('registered_community') or '',
+            registered_address=data.get('registered_address') or '',
             registered_region=data.get('registered_region'),
-            household_number=data.get('household_number'),
+            household_number=data.get('household_number') or '',
             is_separated=data.get('is_separated', False),
-            actual_residence=data.get('actual_residence'),
+            actual_residence=data.get('actual_residence') or '',
             is_moved_out=data.get('is_moved_out', False),
             move_out_date=data.get('move_out_date'),
-            move_to_place=data.get('move_to_place'),
+            move_to_place=data.get('move_to_place') or '',
             is_deceased=data.get('is_deceased', False),
             death_date=data.get('death_date'),
+            death_reason=data.get('death_reason') or '',
             nation_id=data.get('nation_id'),
             political_status_id=data.get('political_status_id'),
             marital_status_id=data.get('marital_status_id'),
             education_id=data.get('education_id'),
-            work_status=data.get('work_status'),
+            work_status=data.get('work_status') or '',
             health_status_id=data.get('health_status_id'),
-            notes=data.get('notes'),
+            notes=data.get('notes') or '',
         )
         
         return resident
@@ -122,7 +123,7 @@ class ResidentInfoService:
             'registered_community', 'registered_address', 'registered_region', 'household_number',
             'is_separated', 'actual_residence',
             'is_moved_out', 'move_out_date', 'move_to_place',
-            'is_deceased', 'death_date',
+            'is_deceased', 'death_date', 'death_reason',
             'nation_id', 'political_status_id', 'marital_status_id', 'education_id', 
             'work_status', 'health_status_id', 'notes'
         ]
@@ -174,6 +175,7 @@ class ResidentInfoService:
             {'name': 'key_category', 'label': '重点类别', 'type': 'fk'},
             {'name': 'registered_community', 'label': '户籍小区/建筑', 'type': 'string'},
             {'name': 'registered_address', 'label': '户籍地址', 'type': 'string'},
+            {'name': 'registered_region', 'label': '户籍地址省市区', 'type': 'string'},
             {'name': 'household_number', 'label': '户编号', 'type': 'string'},
             {'name': 'is_separated', 'label': '是否人户分离', 'type': 'boolean'},
             {'name': 'actual_residence', 'label': '实际居住地', 'type': 'string'},
@@ -182,6 +184,7 @@ class ResidentInfoService:
             {'name': 'move_to_place', 'label': '迁往地', 'type': 'string'},
             {'name': 'is_deceased', 'label': '是否已死亡', 'type': 'boolean'},
             {'name': 'death_date', 'label': '死亡日期', 'type': 'date'},
+            {'name': 'death_reason', 'label': '死亡原因', 'type': 'string'},
             {'name': 'nation', 'label': '民族', 'type': 'fk'},
             {'name': 'political_status', 'label': '政治面貌', 'type': 'fk'},
             {'name': 'marital_status', 'label': '婚姻状况', 'type': 'fk'},

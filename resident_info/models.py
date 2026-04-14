@@ -83,6 +83,7 @@ class ResidentInfoFields(models.Model):
     
     is_deceased = models.BooleanField(default=False, verbose_name='是否已死亡')
     death_date = models.DateField(null=True, blank=True, verbose_name='死亡日期')
+    death_reason = models.CharField(max_length=200, blank=True, verbose_name='死亡原因')
     
     nation = models.ForeignKey(
         'core.TaxonomyItem',

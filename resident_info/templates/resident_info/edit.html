@@ -144,7 +144,7 @@
         </div>
     </div>
     
-    <div class="col-md-6">
+    <div class="col-md-6 {% if not resident or not resident.is_separated %}d-none{% endif %}" id="actual_residence_field">
         <label class="form-label">实际居住地</label>
         <input type="text" name="actual_residence" class="form-control" value="{{ resident.actual_residence if resident and resident.actual_residence else '' }}">
     </div>
@@ -181,6 +181,11 @@
     <div class="col-md-6 {% if not resident or not resident.is_deceased %}d-none{% endif %}" id="deceased_field">
         <label class="form-label">死亡日期</label>
         <input type="date" name="death_date" class="form-control" value="{{ resident.death_date if resident and resident.death_date else '' }}">
+    </div>
+    
+    <div class="col-md-6 {% if not resident or not resident.is_deceased %}d-none{% endif %}" id="death_reason_field">
+        <label class="form-label">死亡原因</label>
+        <input type="text" name="death_reason" class="form-control" value="{{ resident.death_reason if resident and resident.death_reason else '' }}">
     </div>
     
     <div class="col-md-12">
@@ -384,6 +389,19 @@
     const movedOutPlaceField = document.getElementById('moved_out_place_field');
     const isDeceasedCheckbox = document.getElementById('is_deceased');
     const deceasedField = document.getElementById('deceased_field');
+    const deathReasonField = document.getElementById('death_reason_field');
+    const isSeparatedCheckbox = document.getElementById('is_separated');
+    const actualResidenceField = document.getElementById('actual_residence_field');
+    
+    if (isSeparatedCheckbox && actualResidenceField) {
+        isSeparatedCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                actualResidenceField.classList.remove('d-none');
+            } else {
+                actualResidenceField.classList.add('d-none');
+            }
+        });
+    }
     
     if (isMovedOutCheckbox && movedOutFields && movedOutPlaceField) {
         isMovedOutCheckbox.addEventListener('change', function() {
@@ -401,8 +419,10 @@
         isDeceasedCheckbox.addEventListener('change', function() {
             if (this.checked) {
                 deceasedField.classList.remove('d-none');
+                if (deathReasonField) deathReasonField.classList.remove('d-none');
             } else {
                 deceasedField.classList.add('d-none');
+                if (deathReasonField) deathReasonField.classList.add('d-none');
             }
         });
     }

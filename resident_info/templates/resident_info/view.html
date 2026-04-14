@@ -114,14 +114,12 @@
                 <label class="form-label text-muted">户编号</label>
                 <p class="mb-0">{{ resident.household_number if resident.household_number else '-' }}</p>
             </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label text-muted">是否人户分离</label>
-                <p class="mb-0">{% if resident.is_separated %}是{% else %}否{% endif %}</p>
-            </div>
+            {% if resident.is_separated %}
             <div class="col-md-6 mb-3">
                 <label class="form-label text-muted">实际居住地</label>
                 <p class="mb-0">{{ resident.actual_residence if resident.actual_residence else '-' }}</p>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -146,6 +144,10 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label text-muted">死亡日期</label>
                 <p class="mb-0">{{ resident.death_date|date('Y-m-d') if resident.death_date else '-' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label text-muted">死亡原因</label>
+                <p class="mb-0">{{ resident.death_reason if resident.death_reason else '-' }}</p>
             </div>
             {% endif %}
         </div>

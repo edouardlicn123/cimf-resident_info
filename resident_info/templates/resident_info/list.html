@@ -64,22 +64,22 @@
                 <thead class="table-light">
                     <tr>
                         <th>姓名</th>
-                        <th>身份证号</th>
-                        <th>联系电话</th>
+                        <th>性别</th>
                         <th>所在小区/建筑</th>
-                        <th>所属网格</th>
+                        <th>房号</th>
+                        <th>联系电话</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% if residents %}
                     {% for resident in residents %}
-                    <tr>
-                        <td>{{ resident.name }}</td>
-                        <td>{{ resident.id_card if resident.id_card else '-' }}</td>
-                        <td>{{ resident.phone if resident.phone else '-' }}</td>
-                        <td>{{ resident.current_community if resident.current_community else '-' }}</td>
-                        <td>{{ resident.grid.name if resident.grid else '-' }}</td>
+                    <tr class="align-middle">
+                        <td class="fs-6">{{ resident.name }}</td>
+                        <td class="fs-6">{{ resident.gender.name if resident.gender else '-' }}</td>
+                        <td class="fs-6">{{ resident.current_community if resident.current_community else '-' }}</td>
+                        <td class="fs-6">{{ resident.current_door if resident.current_door else '-' }}</td>
+                        <td class="fs-6">{{ resident.phone if resident.phone else '-' }}</td>
                         <td>
                             <a href="{{ url('modules:resident_info:view', resident.node_id) }}" class="btn btn-sm btn-outline-primary">
                                 <i class="bi bi-eye"></i>
@@ -87,6 +87,13 @@
                             <a href="{{ url('modules:resident_info:edit', resident.node_id) }}" class="btn btn-sm btn-outline-secondary">
                                 <i class="bi bi-pencil"></i>
                             </a>
+                        </td>
+                    </tr>
+                    <tr class="table-secondary" style="--bs-table-accent-bg: none;">
+                        <td colspan="6" class="py-1" style="font-size: 0.75rem;">
+                            <span class="me-3">身份证:{{ resident.id_card if resident.id_card else '-' }}</span>
+                            <span class="me-3">户籍地址:{{ resident.registered_address if resident.registered_address else '-' }}</span>
+                            <span>所属网格:{{ resident.grid.name if resident.grid else '-' }}</span>
                         </td>
                     </tr>
                     {% endfor %}

@@ -65,6 +65,8 @@ def node_list(request):
     resident_type_filter = request.GET.get('resident_type', '')
     grid_filter = request.GET.get('grid', '')
     current_community_filter = request.GET.get('current_community', '')
+    show_moved_out = request.GET.get('show_moved_out')
+    show_deceased = request.GET.get('show_deceased')
     
     resident_type_id = safe_int(resident_type_filter)
     grid_id = safe_int(grid_filter)
@@ -74,6 +76,8 @@ def node_list(request):
         resident_type_id=resident_type_id,
         grid_id=grid_id,
         current_community=current_community_filter if current_community_filter else None,
+        show_moved_out=bool(show_moved_out),
+        show_deceased=bool(show_deceased),
         user=request.user
     )
     
@@ -90,6 +94,8 @@ def node_list(request):
         'filter_resident_type': resident_type_filter,
         'filter_grid': grid_filter,
         'filter_current_community': current_community_filter,
+        'filter_show_moved_out': bool(show_moved_out),
+        'filter_show_deceased': bool(show_deceased),
         'resident_types': get_taxonomy_items('resident_type'),
         'grids': get_taxonomy_items('grid'),
         'page_obj': page_obj,

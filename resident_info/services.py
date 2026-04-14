@@ -18,6 +18,7 @@ class ResidentInfoService:
     @staticmethod
     def get_list(search: Optional[str] = None, resident_type_id: Optional[int] = None,
                 grid_id: Optional[int] = None, current_community: Optional[str] = None,
+                show_moved_out: bool = False, show_deceased: bool = False,
                 user=None) -> List[ResidentInfoFields]:
         """获取居民列表"""
         queryset = ResidentInfoFields.objects.select_related(
@@ -46,6 +47,12 @@ class ResidentInfoService:
         
         if current_community:
             queryset = queryset.filter(current_community__icontains=current_community)
+        
+        if not show_moved_out:
+            queryset = queryset.filter(is_moved_out=False)
+        
+        if not show_deceased:
+            queryset = queryset.filter(is_deceased=False)
         
         return queryset.order_by('-created_at')
     

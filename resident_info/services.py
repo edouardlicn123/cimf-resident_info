@@ -112,7 +112,7 @@ class ResidentInfoService:
         if not resident:
             return None
         
-        NodeService.update(resident.node_id, user, {})
+        NodeService.update_node(resident.node_id, {})
         
         update_fields = [
             'name', 'relation_id', 'id_card', 'gender_id', 'birth_date', 'phone',

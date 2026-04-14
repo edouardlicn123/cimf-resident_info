@@ -65,8 +65,8 @@ def node_list(request):
     resident_type_filter = request.GET.get('resident_type', '')
     grid_filter = request.GET.get('grid', '')
     current_community_filter = request.GET.get('current_community', '')
-    show_moved_out = request.GET.get('show_moved_out')
-    show_deceased = request.GET.get('show_deceased')
+    show_moved_out = request.GET.get('show_moved_out') == '1'
+    show_deceased = request.GET.get('show_deceased') == '1'
     
     resident_type_id = safe_int(resident_type_filter)
     grid_id = safe_int(grid_filter)

@@ -151,14 +151,21 @@ class ResidentInfoService:
     
     @staticmethod
     def get_count() -> int:
-        return ResidentInfoFields.objects.count()
+        return ResidentInfoFields.objects.filter(
+            is_moved_out=False, 
+            is_deceased=False
+        ).count()
     
     @staticmethod
     def get_recent_count(days: int = 7) -> int:
         from django.utils import timezone
         from datetime import timedelta
         start_date = timezone.now() - timedelta(days=days)
-        return ResidentInfoFields.objects.filter(created_at__gte=start_date).count()
+        return ResidentInfoFields.objects.filter(
+            created_at__gte=start_date,
+            is_moved_out=False, 
+            is_deceased=False
+        ).count()
     
     @staticmethod
     def get_exportable_fields() -> List[Dict]:

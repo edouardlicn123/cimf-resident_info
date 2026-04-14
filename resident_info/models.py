@@ -139,6 +139,19 @@ class ResidentInfoFields(models.Model):
     def creator(self):
         return self.node.created_by if hasattr(self, 'node') and self.node else None
     
+    @property
+    def registered_region_str(self):
+        if not self.registered_region:
+            return None
+        parts = []
+        if self.registered_region.get('province'):
+            parts.append(self.registered_region['province'])
+        if self.registered_region.get('city'):
+            parts.append(self.registered_region['city'])
+        if self.registered_region.get('district'):
+            parts.append(self.registered_region['district'])
+        return ''.join(parts) if parts else None
+    
     def __str__(self):
         return self.name
 

@@ -51,6 +51,14 @@
                 <p class="mb-0">{{ resident.phone if resident.phone else '-' }}</p>
             </div>
             <div class="col-md-6 mb-3">
+                <label class="form-label text-muted">联系电话2</label>
+                <p class="mb-0">{{ resident.phone2 if resident.phone2 else '-' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label text-muted">联系电话3</label>
+                <p class="mb-0">{{ resident.phone3 if resident.phone3 else '-' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
                 <label class="form-label text-muted">出生日期</label>
                 <p class="mb-0">{{ resident.birth_date|date('Y-m-d') if resident.birth_date else '-' }}</p>
             </div>
@@ -98,6 +106,48 @@
                 <label class="form-label text-muted">户籍地址</label>
                 <p class="mb-0">{{ resident.registered_address if resident.registered_address else '-' }}</p>
             </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label text-muted">户籍地址省市区</label>
+                <p class="mb-0">{{ resident.registered_region.region_str if resident.registered_region else '-' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label text-muted">户编号</label>
+                <p class="mb-0">{{ resident.household_number if resident.household_number else '-' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label text-muted">是否人户分离</label>
+                <p class="mb-0">{% if resident.is_separated %}是{% else %}否{% endif %}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label text-muted">实际居住地</label>
+                <p class="mb-0">{{ resident.actual_residence if resident.actual_residence else '-' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header">
+        <h5 class="mb-0">迁移与生命状态</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% if resident.is_moved_out %}
+            <div class="col-md-6 mb-3">
+                <label class="form-label text-muted">迁出日期</label>
+                <p class="mb-0">{{ resident.move_out_date|date('Y-m-d') if resident.move_out_date else '-' }}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label text-muted">迁往地</label>
+                <p class="mb-0">{{ resident.move_to_place if resident.move_to_place else '-' }}</p>
+            </div>
+            {% endif %}
+            {% if resident.is_deceased %}
+            <div class="col-md-6 mb-3">
+                <label class="form-label text-muted">死亡日期</label>
+                <p class="mb-0">{{ resident.death_date|date('Y-m-d') if resident.death_date else '-' }}</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -131,6 +181,10 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label text-muted">是否重点人员</label>
                 <p class="mb-0">{% if resident.is_key_person %}是{% else %}否{% endif %}</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label text-muted">工作学习情况</label>
+                <p class="mb-0">{{ resident.work_status if resident.work_status else '-' }}</p>
             </div>
             {% if resident.notes %}
             <div class="col-md-12 mb-3">

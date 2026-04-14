@@ -21,6 +21,11 @@
                 <label class="form-label small text-muted">姓名/身份证号/电话</label>
                 <input type="text" name="search" class="form-control" placeholder="搜索..." value="{{ search }}">
             </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">现住小区/建筑</label>
+                <input type="text" name="current_community" class="form-control" 
+                       placeholder="搜索现住小区..." value="{{ filter_current_community }}">
+            </div>
             <div class="col-md-2">
                 <label class="form-label small text-muted">人员类型</label>
                 <select name="resident_type" class="form-select">
@@ -33,7 +38,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label small text-warning fw-bold">所属网格</label>
+                <label class="form-label small text-muted">所属网格</label>
                 <select name="grid" class="form-select">
                     <option value="">全部</option>
                     {% if grids %}
@@ -43,17 +48,12 @@
                     {% endif %}
                 </select>
             </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button type="submit" class="btn btn-outline-primary w-100">
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
                     <i class="bi bi-search"></i> 搜索
                 </button>
             </div>
-            <div class="col-md-3">
-                <label class="form-label small text-muted">现住小区/建筑</label>
-                <input type="text" name="current_community" class="form-control" 
-                       placeholder="搜索现住小区..." value="{{ filter_current_community }}">
-            </div>
-            <div class="col-md-9">
+            <div class="col-md-12">
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" id="show_moved_out" name="show_moved_out" value="1" {% if filter_show_moved_out %}checked{% endif %}>
                     <label class="form-check-label" for="show_moved_out">显示已迁出</label>

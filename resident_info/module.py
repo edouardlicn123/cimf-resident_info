@@ -7,11 +7,12 @@ MODULE_INFO = {
     'id': 'resident_info',
     'name': '居民信息',
     'type': 'node',
-    'version': '1.1.9',
+    'version': '1.2.1',
     'author': 'edouardlicn',
     'description': '管理居民住户信息，适合居委会及网格员使用。',
     'icon': 'bi-person-vcard',
     'require': [],
+    'frontpage_card_clickable': True,
     'permissions': [
         {'key': 'view_others', 'name': '查看别人的内容'},
         {'key': 'edit_others', 'name': '修改别人的内容'},

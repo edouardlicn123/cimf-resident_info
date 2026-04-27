@@ -27,6 +27,15 @@ class ResidentInfoFields(models.Model):
         verbose_name='与其他人员关系'
     )
     id_card = models.CharField(max_length=18, blank=True, null=True, verbose_name='身份证号')
+    other_id_type = models.ForeignKey(
+        'core.TaxonomyItem',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='other_id_type_residents',
+        verbose_name='其他证件类型'
+    )
+    other_id_number = models.CharField(max_length=50, blank=True, null=True, verbose_name='其他证件号码')
     gender = models.ForeignKey(
         'core.TaxonomyItem',
         on_delete=models.SET_NULL,

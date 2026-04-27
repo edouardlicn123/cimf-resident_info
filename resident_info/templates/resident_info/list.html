@@ -101,6 +101,7 @@
                             <span class="badge bg-warning me-1 {% if not resident.is_moved_out %}d-none{% endif %}">迁出</span>
                             <span class="badge bg-secondary me-2 {% if not resident.is_deceased %}d-none{% endif %}">死亡</span>
                             <span class="text-primary fw-bold me-3">身份证:{{ resident.id_card if resident.id_card else '-' }}</span>
+                            <span class="text-danger fw-bold me-3">关系:{{ resident.relation.name if resident.relation else '-' }}</span>
                             <span class="text-success fw-bold me-3">户籍地址:{{ resident.registered_address if resident.registered_address else '-' }}</span>
                             <span class="text-secondary fw-bold me-3">所属网格:{{ resident.grid.name if resident.grid else '-' }}</span>
                             <span class="text-danger fw-bold">人员类型:{{ resident.resident_type.name if resident.resident_type else '-' }}</span>

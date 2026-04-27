@@ -46,9 +46,15 @@ class ResidentInfoService:
             queryset = queryset.filter(grid_id=grid_id)
         
         if current_community:
-            queryset = queryset.filter(current_community__icontains=current_community)
+            search_terms = current_community.split()
+            query = Q()
+            for term in search_terms:
+                query &= (
+                    Q(current_community__icontains=term) |
+                    Q(current_door__icontains=term)
+                )
+            queryset = queryset.filter(query)
         
-        from django.db.models import Q
         if show_moved_out or show_deceased:
             query = Q()
             if show_moved_out:

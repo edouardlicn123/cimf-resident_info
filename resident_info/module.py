@@ -71,6 +71,7 @@ MODULE_INFO = {
         {'slug': 'marital_status', 'name': '婚姻状况', 'items': ['未婚', '已婚', '离异', '丧偶']},
         {'slug': 'education', 'name': '文化程度', 'items': ['研究生', '本科', '大专', '高中', '初中', '小学', '文盲']},
         {'slug': 'health_status', 'name': '健康状况', 'items': ['健康', '良好', '残疾', '疾病', '慢性病']},
+        {'slug': 'other_id_type', 'name': '其他证件类型', 'items': ['护照', '军官证', '港澳台通行证', '其他']},
     ],
 }
 

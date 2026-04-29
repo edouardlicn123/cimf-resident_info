@@ -211,3 +211,8 @@ class ResidentInfoService:
             {'name': 'health_status', 'label': '健康状况', 'type': 'fk'},
             {'name': 'notes', 'label': '备注', 'type': 'string'},
         ]
+
+    @staticmethod
+    def init_sample_data() -> int:
+        """初始化样本数据（已禁用，不生成测试数据）"""
+        return 0  # 居民信息模块不生成测试数据（如张三、李四、王五）

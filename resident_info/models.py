@@ -24,7 +24,7 @@ class ResidentInfoFields(models.Model):
         null=True,
         blank=True,
         related_name='resident_relation_residents',
-        verbose_name='与其他人员关系'
+        verbose_name='与户主关系'
     )
     id_card = models.CharField(max_length=18, blank=True, null=True, verbose_name='身份证号')
     other_id_type = models.ForeignKey(

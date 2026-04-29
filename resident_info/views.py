@@ -12,6 +12,7 @@ from django.http import JsonResponse
 from core.node.services import NodeTypeService, NodeService
 from core.services import TaxonomyService
 from .services import ResidentInfoService
+from core.decorators import login_required_json
 
 
 def safe_int(value: str, default=None):
@@ -303,7 +304,7 @@ def node_delete(request, node_id: int):
     return redirect('modules:resident_info:list')
 
 
-@login_required
+@login_required_json
 def api_stats(request):
     total = ResidentInfoService.get_count()
     recent = ResidentInfoService.get_recent_count(days=7)

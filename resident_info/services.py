@@ -1,35 +1,37 @@
-# -*- coding: utf-8 -*-
 """
 居民信息服务
 """
 
-from typing import List, Optional, Dict, Any
+from typing import Any
+
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from .models import ResidentInfoFields
+
 from core.node.services import NodeService
+
+from .models import ResidentInfoFields
 
 User = get_user_model()
 
 
 class ResidentInfoService:
     """居民信息管理服务"""
-    
+
     @staticmethod
-    def get_list(search: Optional[str] = None, resident_type_id: Optional[int] = None,
-                grid_id: Optional[int] = None, current_community: Optional[str] = None,
+    def get_list(search: str | None = None, resident_type_id: int | None = None,
+                grid_id: int | None = None, current_community: str | None = None,
                 show_moved_out: bool = False, show_deceased: bool = False,
-                user=None) -> List[ResidentInfoFields]:
+                user=None) -> list[ResidentInfoFields]:
         """获取居民列表"""
         queryset = ResidentInfoFields.objects.select_related(
-            'node', 'relation', 'gender', 'grid', 'resident_type', 
-            'key_category', 'nation', 'political_status', 
+            'node', 'relation', 'gender', 'grid', 'resident_type',
+            'key_category', 'nation', 'political_status',
             'marital_status', 'education', 'health_status'
         )
-        
+
         if user and not user.is_admin:
             queryset = queryset.filter(node__created_by=user)
-        
+
         if search:
             queryset = queryset.filter(
                 Q(name__isnull=False, name__icontains=search) |
@@ -38,13 +40,13 @@ class ResidentInfoService:
                 Q(phone2__isnull=False, phone2__icontains=search) |
                 Q(phone3__isnull=False, phone3__icontains=search)
             )
-        
+
         if resident_type_id:
             queryset = queryset.filter(resident_type_id=resident_type_id)
-        
+
         if grid_id:
             queryset = queryset.filter(grid_id=grid_id)
-        
+
         if current_community:
             search_terms = current_community.split()
             query = Q()
@@ -54,7 +56,7 @@ class ResidentInfoService:
                     Q(current_door__icontains=term)
                 )
             queryset = queryset.filter(query)
-        
+
         if show_moved_out or show_deceased:
             query = Q()
             if show_moved_out:
@@ -64,21 +66,21 @@ class ResidentInfoService:
             queryset = queryset.filter(query)
         else:
             queryset = queryset.filter(is_moved_out=False, is_deceased=False)
-        
+
         return queryset.order_by('-created_at')
-    
+
     @staticmethod
-    def get_by_id(resident_id: int) -> Optional[ResidentInfoFields]:
+    def get_by_id(resident_id: int) -> ResidentInfoFields | None:
         return ResidentInfoFields.objects.filter(id=resident_id).first()
-    
+
     @staticmethod
-    def get_by_node_id(node_id: int) -> Optional[ResidentInfoFields]:
+    def get_by_node_id(node_id: int) -> ResidentInfoFields | None:
         return ResidentInfoFields.objects.filter(node_id=node_id).first()
-    
+
     @staticmethod
-    def create(user, data: Dict[str, Any]) -> ResidentInfoFields:
+    def create(user, data: dict[str, Any]) -> ResidentInfoFields:
         node = NodeService.create_node('resident_info', {}, user)
-        
+
         resident = ResidentInfoFields.objects.create(
             node=node,
             name=data.get('name', ''),
@@ -115,17 +117,17 @@ class ResidentInfoService:
             health_status_id=data.get('health_status_id'),
             notes=data.get('notes') or '',
         )
-        
+
         return resident
-    
+
     @staticmethod
-    def update(resident_id: int, user, data: Dict[str, Any]) -> Optional[ResidentInfoFields]:
+    def update(resident_id: int, data: dict[str, Any]) -> ResidentInfoFields | None:
         resident = ResidentInfoFields.objects.filter(id=resident_id).first()
         if not resident:
             return None
-        
+
         NodeService.update_node(resident.node_id, {})
-        
+
         update_fields = [
             'name', 'relation_id', 'id_card', 'gender_id', 'birth_date', 'phone',
             'phone2', 'phone3',
@@ -135,17 +137,17 @@ class ResidentInfoService:
             'is_separated', 'actual_residence',
             'is_moved_out', 'move_out_date', 'move_to_place',
             'is_deceased', 'death_date', 'death_reason',
-            'nation_id', 'political_status_id', 'marital_status_id', 'education_id', 
+            'nation_id', 'political_status_id', 'marital_status_id', 'education_id',
             'work_status', 'health_status_id', 'notes'
         ]
-        
+
         for field in update_fields:
             if field in data:
                 setattr(resident, field, data[field])
-        
+
         resident.save()
         return resident
-    
+
     @staticmethod
     def delete_by_node_id(node_id: int) -> bool:
         """通过 node_id 删除居民信息（级联删除 node）"""
@@ -154,27 +156,28 @@ class ResidentInfoService:
             resident.node.delete()
             return True
         return False
-    
+
     @staticmethod
     def get_count() -> int:
         return ResidentInfoFields.objects.filter(
-            is_moved_out=False, 
+            is_moved_out=False,
             is_deceased=False
         ).count()
-    
+
     @staticmethod
     def get_recent_count(days: int = 7) -> int:
-        from django.utils import timezone
         from datetime import timedelta
+
+        from django.utils import timezone
         start_date = timezone.now() - timedelta(days=days)
         return ResidentInfoFields.objects.filter(
             created_at__gte=start_date,
-            is_moved_out=False, 
+            is_moved_out=False,
             is_deceased=False
         ).count()
-    
+
     @staticmethod
-    def get_exportable_fields() -> List[Dict]:
+    def get_exportable_fields() -> list[dict]:
         """获取可导出的字段列表"""
         return [
             {'name': 'name', 'label': '姓名', 'type': 'string', 'required': True},

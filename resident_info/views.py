@@ -1,18 +1,19 @@
-# -*- coding: utf-8 -*-
 """
 居民信息模块视图
 """
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from django.views.decorators.http import require_POST
 
-from core.node.services import NodeTypeService, NodeService
-from core.services import TaxonomyService
-from .services import ResidentInfoService
 from core.decorators import login_required_json
+from core.node.services import NodeService, NodeTypeService
+from core.services import TaxonomyService
+
+from .services import ResidentInfoService
 
 
 def safe_int(value: str, default=None):
@@ -28,23 +29,23 @@ def check_resident_permission(user, node, permission_type: str):
     """检查居民节点操作权限"""
     if user.is_admin:
         return True, None
-    
+
     is_creator = node.created_by_id == user.id
     if is_creator:
         return True, None
-    
+
     perm_map = {
         'view': 'node.resident_info.view_others',
         'edit': 'node.resident_info.edit_others',
         'delete': 'node.resident_info.delete_others',
     }
-    
+
     perm = perm_map.get(permission_type)
     if perm:
         from core.services import PermissionService
         if PermissionService.has_permission(user, perm):
             return True, None
-    
+
     return False, f'您没有权限{permission_type}别人的居民信息'
 
 
@@ -61,17 +62,17 @@ def node_list(request):
     if not node_type:
         from django.http import Http404
         raise Http404('节点类型不存在')
-    
+
     search = request.GET.get('search', '')
     resident_type_filter = request.GET.get('resident_type', '')
     grid_filter = request.GET.get('grid', '')
     current_community_filter = request.GET.get('current_community', '')
     show_moved_out = request.GET.get('show_moved_out') == '1'
     show_deceased = request.GET.get('show_deceased') == '1'
-    
+
     resident_type_id = safe_int(resident_type_filter)
     grid_id = safe_int(grid_filter)
-    
+
     residents = ResidentInfoService.get_list(
         search if search else None,
         resident_type_id=resident_type_id,
@@ -81,11 +82,11 @@ def node_list(request):
         show_deceased=bool(show_deceased),
         user=request.user
     )
-    
+
     page_num = request.GET.get('page', 1)
     paginator = Paginator(residents, 10)
     page_obj = paginator.get_page(page_num)
-    
+
     return render(request, 'resident_info/list.html', {
         'node_type': node_type,
         'node_types': NodeTypeService.get_all(),
@@ -115,7 +116,7 @@ def node_create(request):
     if not node_type:
         from django.http import Http404
         raise Http404('节点类型不存在')
-    
+
     if request.method == 'POST':
         data = {
             'name': request.POST.get('name', '').strip(),
@@ -154,14 +155,14 @@ def node_create(request):
             'health_status_id': request.POST.get('health_status') or None,
             'notes': request.POST.get('notes', '').strip(),
         }
-        
+
         try:
             ResidentInfoService.create(request.user, data)
             messages.success(request, '居民信息创建成功')
-            return redirect('modules:resident_info:list')
+            return redirect('node:module_page', 'resident_info')
         except Exception as e:
             messages.error(request, str(e))
-    
+
     return render(request, 'resident_info/edit.html', {
         'node_type': node_type,
         'node_types': NodeTypeService.get_all(),
@@ -187,17 +188,17 @@ def node_view(request, node_id: int):
     if not node:
         from django.http import Http404
         raise Http404('节点不存在')
-    
+
     has_perm, error_msg = check_resident_permission(request.user, node, 'view')
     if not has_perm:
         messages.error(request, error_msg)
-        return redirect('modules:resident_info:list')
-    
+        return redirect('node:module_page', 'resident_info')
+
     resident = ResidentInfoService.get_by_node_id(node_id)
     if not resident:
         messages.error(request, '居民信息不存在')
-        return redirect('modules:resident_info:list')
-    
+        return redirect('node:module_page', 'resident_info')
+
     return render(request, 'resident_info/view.html', {
         'node_type': node.node_type,
         'node_types': NodeTypeService.get_all(),
@@ -213,17 +214,17 @@ def node_edit(request, node_id: int):
     if not node:
         from django.http import Http404
         raise Http404('节点不存在')
-    
+
     has_perm, error_msg = check_resident_permission(request.user, node, 'edit')
     if not has_perm:
         messages.error(request, error_msg)
-        return redirect('modules:resident_info:view', node_id)
-    
+        return redirect('node:node_view', 'resident_info', node_id)
+
     resident = ResidentInfoService.get_by_node_id(node_id)
     if not resident:
         messages.error(request, '居民信息不存在')
-        return redirect('modules:resident_info:list')
-    
+        return redirect('node:module_page', 'resident_info')
+
     if request.method == 'POST':
         data = {
             'name': request.POST.get('name', '').strip(),
@@ -262,14 +263,14 @@ def node_edit(request, node_id: int):
             'health_status_id': request.POST.get('health_status') or None,
             'notes': request.POST.get('notes', '').strip(),
         }
-        
+
         try:
-            ResidentInfoService.update(resident.id, request.user, data)
+            ResidentInfoService.update(resident.id, data)
             messages.success(request, '居民信息更新成功')
-            return redirect('modules:resident_info:view', node_id)
+            return redirect('node:node_view', 'resident_info', node_id)
         except Exception as e:
             messages.error(request, str(e))
-    
+
     return render(request, 'resident_info/edit.html', {
         'node_type': node.node_type,
         'node_types': NodeTypeService.get_all(),
@@ -291,6 +292,7 @@ def node_edit(request, node_id: int):
 
 
 @login_required
+@require_POST
 def node_delete(request, node_id: int):
     node = NodeService.get_by_id(node_id)
     if node:
@@ -300,15 +302,15 @@ def node_delete(request, node_id: int):
         else:
             ResidentInfoService.delete_by_node_id(node_id)
             messages.success(request, '居民信息已删除')
-    
-    return redirect('modules:resident_info:list')
+
+    return redirect('node:module_page', 'resident_info')
 
 
 @login_required_json
-def api_stats(request):
+def api_stats(request):  # noqa: ARG001
     total = ResidentInfoService.get_count()
     recent = ResidentInfoService.get_recent_count(days=7)
-    
+
     return JsonResponse({
         'success': True,
         'data': {

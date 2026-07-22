@@ -80,7 +80,7 @@ class ResidentInfoFields(models.Model):
 
     registered_community = models.CharField(max_length=200, blank=True, verbose_name='户籍小区/建筑')
     registered_address = models.CharField(max_length=200, blank=True, verbose_name='户籍地址')
-    registered_region = models.JSONField(blank=True, null=True, verbose_name='户籍地址省市区')
+    registered_region = models.JSONField(default=dict, blank=True, null=True, verbose_name='户籍地址省市区')
     household_number = models.CharField(max_length=50, blank=True, verbose_name='户编号')
 
     is_separated = models.BooleanField(default=False, verbose_name='是否人户分离')
@@ -144,9 +144,10 @@ class ResidentInfoFields(models.Model):
         db_table = 'resident_info_fields'
         verbose_name = '居民'
         verbose_name_plural = '居民'
+        ordering = ['name']
 
     def __str__(self):
-        return self.name
+        return self.name or f"ResidentInfoFields({self.pk})"
 
     @property
     def creator(self):

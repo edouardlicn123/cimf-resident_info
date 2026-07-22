@@ -2,27 +2,34 @@
 居民信息模块视图
 """
 
+import json
+import logging
+from urllib.parse import urlencode
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
 from core.decorators import login_required_json
+
+logger = logging.getLogger(__name__)
 from core.node.services import NodeService, NodeTypeService
-from core.services import TaxonomyService
+from core.services import PermissionService, TaxonomyService
+from core.utils.pagination import paginate_queryset
+from core.utils.views import safe_int
 
 from .services import ResidentInfoService
 
 
-def safe_int(value: str, default=None):
+def _parse_json_field(value):
     if not value:
-        return default
+        return None
     try:
-        return int(value)
-    except (ValueError, TypeError):
-        return default
+        return json.loads(value)
+    except (json.JSONDecodeError, TypeError):
+        return value
 
 
 def check_resident_permission(user, node, permission_type: str):
@@ -41,10 +48,8 @@ def check_resident_permission(user, node, permission_type: str):
     }
 
     perm = perm_map.get(permission_type)
-    if perm:
-        from core.services import PermissionService
-        if PermissionService.has_permission(user, perm):
-            return True, None
+    if perm and PermissionService.has_permission(user, perm):
+        return True, None
 
     return False, f'您没有权限{permission_type}别人的居民信息'
 
@@ -60,7 +65,6 @@ def get_taxonomy_items(slug: str):
 def node_list(request):
     node_type = NodeTypeService.get_by_slug('resident_info')
     if not node_type:
-        from django.http import Http404
         raise Http404('节点类型不存在')
 
     search = request.GET.get('search', '')
@@ -83,9 +87,16 @@ def node_list(request):
         user=request.user
     )
 
-    page_num = request.GET.get('page', 1)
-    paginator = Paginator(residents, 10)
-    page_obj = paginator.get_page(page_num)
+    page_obj, _page_range = paginate_queryset(request, residents, per_page=10)
+
+    filter_params = {
+        'search': search,
+        'resident_type': resident_type_filter,
+        'grid': grid_filter,
+        'current_community': current_community_filter,
+        'show_moved_out': '1' if show_moved_out else '0',
+        'show_deceased': '1' if show_deceased else '0',
+    }
 
     return render(request, 'resident_info/list.html', {
         'node_type': node_type,
@@ -98,11 +109,12 @@ def node_list(request):
         'filter_current_community': current_community_filter,
         'filter_show_moved_out': bool(show_moved_out),
         'filter_show_deceased': bool(show_deceased),
+        'filter_query_string': urlencode(filter_params),
         'resident_types': get_taxonomy_items('resident_type'),
         'grids': get_taxonomy_items('grid'),
         'page_obj': page_obj,
         'current_page': page_obj.number,
-        'total_pages': paginator.num_pages,
+        'total_pages': page_obj.paginator.num_pages,
         'has_prev': page_obj.has_previous(),
         'has_next': page_obj.has_next(),
         'prev_page': page_obj.previous_page_number() if page_obj.has_previous() else None,
@@ -114,7 +126,6 @@ def node_list(request):
 def node_create(request):
     node_type = NodeTypeService.get_by_slug('resident_info')
     if not node_type:
-        from django.http import Http404
         raise Http404('节点类型不存在')
 
     if request.method == 'POST':
@@ -137,7 +148,7 @@ def node_create(request):
             'key_category_id': request.POST.get('key_category') or None,
             'registered_community': request.POST.get('registered_community', '').strip(),
             'registered_address': request.POST.get('registered_address', '').strip(),
-            'registered_region': request.POST.get('registered_region') or None,
+            'registered_region': _parse_json_field(request.POST.get('registered_region')),
             'household_number': request.POST.get('household_number', '').strip(),
             'is_separated': request.POST.get('is_separated') == 'on',
             'actual_residence': request.POST.get('actual_residence', '').strip(),
@@ -161,6 +172,7 @@ def node_create(request):
             messages.success(request, '居民信息创建成功')
             return redirect('node:module_page', 'resident_info')
         except Exception as e:
+            logger.exception("创建居民信息失败")
             messages.error(request, str(e))
 
     return render(request, 'resident_info/edit.html', {
@@ -186,7 +198,6 @@ def node_create(request):
 def node_view(request, node_id: int):
     node = NodeService.get_by_id(node_id)
     if not node:
-        from django.http import Http404
         raise Http404('节点不存在')
 
     has_perm, error_msg = check_resident_permission(request.user, node, 'view')
@@ -212,7 +223,6 @@ def node_view(request, node_id: int):
 def node_edit(request, node_id: int):
     node = NodeService.get_by_id(node_id)
     if not node:
-        from django.http import Http404
         raise Http404('节点不存在')
 
     has_perm, error_msg = check_resident_permission(request.user, node, 'edit')
@@ -245,7 +255,7 @@ def node_edit(request, node_id: int):
             'key_category_id': request.POST.get('key_category') or None,
             'registered_community': request.POST.get('registered_community', '').strip(),
             'registered_address': request.POST.get('registered_address', '').strip(),
-            'registered_region': request.POST.get('registered_region') or None,
+            'registered_region': _parse_json_field(request.POST.get('registered_region')),
             'household_number': request.POST.get('household_number', '').strip(),
             'is_separated': request.POST.get('is_separated') == 'on',
             'actual_residence': request.POST.get('actual_residence', '').strip(),
@@ -269,6 +279,7 @@ def node_edit(request, node_id: int):
             messages.success(request, '居民信息更新成功')
             return redirect('node:node_view', 'resident_info', node_id)
         except Exception as e:
+            logger.exception("更新居民信息失败")
             messages.error(request, str(e))
 
     return render(request, 'resident_info/edit.html', {
@@ -292,7 +303,7 @@ def node_edit(request, node_id: int):
 
 
 @login_required
-@require_POST
+@require_POST  # 防止 GET 请求触发删除（CSRF/点击劫持）
 def node_delete(request, node_id: int):
     node = NodeService.get_by_id(node_id)
     if node:

@@ -5,6 +5,7 @@
 from typing import Any
 
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.db.models import Q
 
 from core.node.services import NodeService
@@ -78,14 +79,19 @@ class ResidentInfoService:
         return ResidentInfoFields.objects.filter(node_id=node_id).first()
 
     @staticmethod
+    @transaction.atomic
     def create(user, data: dict[str, Any]) -> ResidentInfoFields:
         node = NodeService.create_node('resident_info', {}, user)
+        if not node:
+            raise ValueError("创建节点失败")
 
         resident = ResidentInfoFields.objects.create(
             node=node,
             name=data.get('name', ''),
             relation_id=data.get('relation_id'),
             id_card=data.get('id_card'),
+            other_id_type_id=data.get('other_id_type_id'),
+            other_id_number=data.get('other_id_number') or '',
             gender_id=data.get('gender_id'),
             birth_date=data.get('birth_date'),
             phone=data.get('phone'),
@@ -121,6 +127,7 @@ class ResidentInfoService:
         return resident
 
     @staticmethod
+    @transaction.atomic
     def update(resident_id: int, data: dict[str, Any]) -> ResidentInfoFields | None:
         resident = ResidentInfoFields.objects.filter(id=resident_id).first()
         if not resident:
@@ -129,8 +136,8 @@ class ResidentInfoService:
         NodeService.update_node(resident.node_id, {})
 
         update_fields = [
-            'name', 'relation_id', 'id_card', 'gender_id', 'birth_date', 'phone',
-            'phone2', 'phone3',
+            'name', 'relation_id', 'id_card', 'other_id_type_id', 'other_id_number',
+            'gender_id', 'birth_date', 'phone', 'phone2', 'phone3',
             'current_community', 'current_door', 'grid_id',
             'resident_type_id', 'is_key_person', 'key_category_id',
             'registered_community', 'registered_address', 'registered_region', 'household_number',
@@ -145,7 +152,7 @@ class ResidentInfoService:
             if field in data:
                 setattr(resident, field, data[field])
 
-        resident.save()
+        resident.save(update_fields=[f for f in update_fields if f in data])
         return resident
 
     @staticmethod

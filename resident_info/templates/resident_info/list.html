@@ -124,7 +124,7 @@
     <ul class="pagination justify-content-center">
         {% if has_prev %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ prev_page }}&search={{ search }}&resident_type={{ filter_resident_type }}&grid={{ filter_grid }}&current_community={{ filter_current_community }}&show_moved_out={% if filter_show_moved_out %}1{% else %}0{% endif %}&show_deceased={% if filter_show_deceased %}1{% else %}0{% endif %}">上一页</a>
+            <a class="page-link" href="?page={{ prev_page }}&{{ filter_query_string|safe }}">上一页</a>{# noqa: CIMF_W009 #}
         </li>
         {% endif %}
         <li class="page-item disabled">
@@ -132,7 +132,7 @@
         </li>
         {% if has_next %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ next_page }}&search={{ search }}&resident_type={{ filter_resident_type }}&grid={{ filter_grid }}&current_community={{ filter_current_community }}&show_moved_out={% if filter_show_moved_out %}1{% else %}0{% endif %}&show_deceased={% if filter_show_deceased %}1{% else %}0{% endif %}">下一页</a>
+            <a class="page-link" href="?page={{ next_page }}&{{ filter_query_string|safe }}">下一页</a>{# noqa: CIMF_W009 #}
         </li>
         {% endif %}
     </ul>

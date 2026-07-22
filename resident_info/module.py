@@ -6,11 +6,12 @@ MODULE_INFO = {
     'id': 'resident_info',
     'name': '居民信息',
     'type': 'node',
-    'version': '1.2.1',
+    'version': '1.2.2',
     'author': 'edouardlicn',
     'description': '管理居民住户信息，适合居委会及网格员使用。',
     'icon': 'bi-person-vcard',
     'require': [],
+    'install_on_init': True,
     'frontpage_card': True,
     'frontpage_card_clickable': True,
     'permissions': [
@@ -58,6 +59,8 @@ MODULE_INFO = {
             'id': 'resident_info_card',
             'name': '居民信息',
             'template': 'resident_info/dashboard_card.html',
+            'color_start': '#0d6efd',
+            'color_end': '#0a58ca',
         }
     ],
     'dashboard_stats': True,
